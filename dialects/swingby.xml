@@ -34,15 +34,6 @@
         <description>PPP, 3D position.</description>
       </entry>
     </enum>
-    <enum name="RTK_BASELINE_COORDINATE_SYSTEM">
-      <description>RTK GPS baseline coordinate system, used for RTK corrections</description>
-      <entry value="0" name="RTK_BASELINE_COORDINATE_SYSTEM_ECEF">
-        <description>Earth-centered, Earth-fixed</description>
-      </entry>
-      <entry value="1" name="RTK_BASELINE_COORDINATE_SYSTEM_NED">
-        <description>RTK basestation centered, north, east, down</description>
-      </entry>
-    </enum>
     <enum name="HIL_SENSOR_UPDATED_FLAGS" bitmask="true">
       <description>Flags in the HIL_SENSOR message indicate which fields have updated since the last message</description>
       <entry value="1" name="HIL_SENSOR_UPDATED_XACC">
@@ -162,16 +153,6 @@
       <extensions/>
       <field type="float[4]" name="repr_offset_q" invalid="[0]">Rotation offset by which the attitude quaternion and angular speed vector should be rotated for user display (quaternion with [w, x, y, z] order, zero-rotation is [1, 0, 0, 0], send [0, 0, 0, 0] if field not supported). This field is intended for systems in which the reference attitude may change during flight. For example, tailsitters VTOLs rotate their reference attitude by 90 degrees between hover mode and fixed wing mode, thus repr_offset_q is equal to [1, 0, 0, 0] in hover mode and equal to [0.7071, 0, 0.7071, 0] in fixed wing mode.</field>
     </message>
-    <message id="32" name="LOCAL_POSITION_NED">
-      <description>The filtered local position (e.g. fused computer vision and accelerometers). Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
-      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="float" name="x" units="m">X Position</field>
-      <field type="float" name="y" units="m">Y Position</field>
-      <field type="float" name="z" units="m">Z Position</field>
-      <field type="float" name="vx" units="m/s">X Speed</field>
-      <field type="float" name="vy" units="m/s">Y Speed</field>
-      <field type="float" name="vz" units="m/s">Z Speed</field>
-    </message>
     <message id="91" name="HIL_CONTROLS">
       <description>Sent from autopilot to simulation. Hardware in the loop control outputs. Alternative to HIL_ACTUATOR_CONTROLS.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
@@ -224,22 +205,6 @@
       <field type="int16_t" name="xacc" units="mG">X acceleration</field>
       <field type="int16_t" name="yacc" units="mG">Y acceleration</field>
       <field type="int16_t" name="zacc" units="mG">Z acceleration</field>
-    </message>
-    <message id="127" name="GPS_RTK">
-      <description>RTK GPS data. Gives information on the relative baseline calculation the GPS is reporting</description>
-      <field type="uint32_t" name="time_last_baseline_ms" units="ms">Time since boot of last baseline message received.</field>
-      <field type="uint8_t" name="rtk_receiver_id">Identification of connected RTK receiver.</field>
-      <field type="uint16_t" name="wn">GPS Week Number of last baseline</field>
-      <field type="uint32_t" name="tow" units="ms">GPS Time of Week of last baseline</field>
-      <field type="uint8_t" name="rtk_health">GPS-specific health report for RTK data.</field>
-      <field type="uint8_t" name="rtk_rate" units="Hz">Rate of baseline messages being received by GPS</field>
-      <field type="uint8_t" name="nsats">Current number of sats used for RTK calculation.</field>
-      <field type="uint8_t" name="baseline_coords_type" enum="RTK_BASELINE_COORDINATE_SYSTEM">Coordinate system of baseline</field>
-      <field type="int32_t" name="baseline_a_mm" units="mm">Current baseline in ECEF x or NED north component.</field>
-      <field type="int32_t" name="baseline_b_mm" units="mm">Current baseline in ECEF y or NED east component.</field>
-      <field type="int32_t" name="baseline_c_mm" units="mm">Current baseline in ECEF z or NED down component.</field>
-      <field type="uint32_t" name="accuracy">Current estimate of baseline accuracy.</field>
-      <field type="int32_t" name="iar_num_hypotheses">Current number of integer ambiguity hypotheses.</field>
     </message>
     <message id="231" name="WIND_COV">
       <description>Wind estimate from vehicle. Note that despite the name, this message does not actually contain any covariances but instead variability and accuracy fields in terms of standard deviation (1-STD).</description>
