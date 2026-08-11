@@ -256,15 +256,20 @@
     <message id="1000" name="EMPENNAGE_STATUS">
       <description>Output status of the empennage.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="float" name="elevator">Elevator position.</field>
-      <field type="float" name="rudder">Rudder position.</field>
+      <field type="float" name="elevator" units="deg">Elevator position.</field>
+      <field type="float" name="rudder" units="deg">Rudder position.</field>
     </message>
     <message id="1001" name="EMPENNAGE_COMMAND">
       <description>Command to the empennage.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="float" name="elevator">Elevator position command.</field>
-      <field type="float" name="rudder">Rudder position command.</field>
-      <field type="float" name="elevator_trim">Elevator trim command.</field>
+      <field type="float" name="elevator" units="deg">Elevator position command.</field>
+      <field type="float" name="rudder" units="deg">Rudder position command.</field>
+      <field type="float" name="elevator_trim" units="deg">Elevator trim command.</field>
+    </message>
+    <message id="1002" name="PILOT_POWER">
+      <description>Output status of the pilot power.</description>
+      <field type="float" name="power" units="W">Power</field>
+      <field type="float" name="cadence" units="rpm">Cadence</field>
     </message>
   </messages>
 </mavlink>
