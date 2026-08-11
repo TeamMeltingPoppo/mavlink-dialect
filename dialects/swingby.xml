@@ -294,5 +294,18 @@
       <field type="uint8_t" name="num_ids">number of IDs in filter list</field>
       <field type="uint16_t[16]" name="ids">filter IDs, length num_ids</field>
     </message>
+    <message id="1000" name="EMPENNAGE_STATUS">
+      <description>Output status of the empennage.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="elevator">Elevator position.</field>
+      <field type="float" name="rudder">Rudder position.</field>
+    </message>
+    <message id="1001" name="EMPENNAGE_COMMAND">
+      <description>Command to the empennage.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="elevator">Elevator position command.</field>
+      <field type="float" name="rudder">Rudder position command.</field>
+      <field type="float" name="elevator_trim">Elevator trim command.</field>
+    </message>
   </messages>
 </mavlink>
