@@ -5,27 +5,48 @@
   <dialect>0</dialect>
   <messages>
     <!-- Note, id 53 reserved for MISSION_CHECKSUM message (development.xml) -->
+    <!-- MESSAGE IDs 180 - 229: Space for custom messages in individual projectname_messages.xml files -->
     <!-- UAVCAN related messages. Please keep the range [310, 320) reserved for UAVCAN. -->
     <!-- The message ids 510 and 511 are reserved for ABSOLUTE_TARGET and RELATIVE_TARGET, currently in development.xml. -->
     <!-- The message ids 12906 - 12914 are reserved for OpenDroneID. -->
     <!-- The message ids 12916 - 12917 are reserved for OpenDroneID. -->
-    <message id="1000" name="EMPENNAGE_STATUS">
+    <message id="180" name="EMPENNAGE_STATUS">
       <description>Output status of the empennage.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="float" name="elevator" units="deg">Elevator position.</field>
       <field type="float" name="rudder" units="deg">Rudder position.</field>
     </message>
-    <message id="1001" name="EMPENNAGE_COMMAND">
+    <message id="181" name="EMPENNAGE_COMMAND">
       <description>Command to the empennage.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="float" name="elevator" units="deg">Elevator position command.</field>
       <field type="float" name="rudder" units="deg">Rudder position command.</field>
       <field type="float" name="elevator_trim" units="deg">Elevator trim command.</field>
     </message>
-    <message id="1002" name="PILOT_POWER">
+    <message id="182" name="PILOT_POWER">
       <description>Output status of the pilot power.</description>
       <field type="float" name="power" units="W">Power</field>
       <field type="float" name="cadence" units="rpm">Cadence</field>
+    </message>
+    <message id="183" name="IMU">
+      <description>The RAW IMU readings for the usual 9DOF sensor setup. This message should contain the scaled values to the described units</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="int16_t" name="xacc" units="mG">X acceleration</field>
+      <field type="int16_t" name="yacc" units="mG">Y acceleration</field>
+      <field type="int16_t" name="zacc" units="mG">Z acceleration</field>
+      <field type="int16_t" name="xgyro" units="mrad/s">Angular speed around X axis</field>
+      <field type="int16_t" name="ygyro" units="mrad/s">Angular speed around Y axis</field>
+      <field type="int16_t" name="zgyro" units="mrad/s">Angular speed around Z axis</field>
+    </message>
+    <message id="184" name="ANGLE_OF_ATTACK">
+      <description>Angle of Attack</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="aoa" units="deg">Angle of attack</field>
+    </message>
+    <message id="185" name="ANGLE_OF_SLIDESLIP">
+      <description>Angle of Slideslip</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="aos" units="deg">Angle of slideslip</field>
     </message>
   </messages>
 </mavlink>

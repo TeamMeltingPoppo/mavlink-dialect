@@ -5643,7 +5643,7 @@
       <field type="uint8_t[20]" name="satellite_azimuth" units="deg" multiplier="360/255">Direction of satellite, 0: 0 deg, 255: 360 deg.</field>
       <field type="uint8_t[20]" name="satellite_snr" units="dB">Signal to noise ratio of satellite</field>
     </message>
-    <message id="26" name="SCALED_IMU">
+    <!-- <message id="26" name="SCALED_IMU">
       <description>The RAW IMU readings for the usual 9DOF sensor setup. This message should contain the scaled values to the described units</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="int16_t" name="xacc" units="mG">X acceleration</field>
@@ -5673,15 +5673,15 @@
       <extensions/>
       <field type="uint8_t" name="id" instance="true">Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0)</field>
       <field type="int16_t" name="temperature" units="cdegC">Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).</field>
-    </message>
-    <message id="28" name="RAW_PRESSURE">
+    </message> -->
+    <!-- <message id="28" name="RAW_PRESSURE">
       <description>The RAW pressure readings for the typical setup of one absolute pressure and one differential pressure sensor. The sensor values should be the raw, UNSCALED ADC values.</description>
       <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
       <field type="int16_t" name="press_abs">Absolute pressure (raw)</field>
       <field type="int16_t" name="press_diff1" invalid="0">Differential pressure 1 (raw, 0 if nonexistent)</field>
       <field type="int16_t" name="press_diff2" invalid="0">Differential pressure 2 (raw, 0 if nonexistent)</field>
       <field type="int16_t" name="temperature">Raw Temperature measurement (raw)</field>
-    </message>
+    </message> -->
     <message id="29" name="SCALED_PRESSURE">
       <description>The pressure readings for the typical setup of one absolute and differential pressure sensor. The units are as specified in each field.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
