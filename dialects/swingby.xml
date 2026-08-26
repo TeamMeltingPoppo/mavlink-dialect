@@ -31,12 +31,12 @@
     <message id="183" name="IMU">
       <description>The RAW IMU readings for the usual 9DOF sensor setup. This message should contain the scaled values to the described units</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
-      <field type="int16_t" name="xacc" units="mG">X acceleration</field>
-      <field type="int16_t" name="yacc" units="mG">Y acceleration</field>
-      <field type="int16_t" name="zacc" units="mG">Z acceleration</field>
-      <field type="int16_t" name="xgyro" units="mrad/s">Angular speed around X axis</field>
-      <field type="int16_t" name="ygyro" units="mrad/s">Angular speed around Y axis</field>
-      <field type="int16_t" name="zgyro" units="mrad/s">Angular speed around Z axis</field>
+      <field type="float" name="xacc"  units="m/s^2">X acceleration</field>
+      <field type="float" name="yacc"  units="m/s^2">Y acceleration</field>
+      <field type="float" name="zacc"  units="m/s^2">Z acceleration</field>
+      <field type="float" name="xgyro" units="rad/s">Angular speed around X axis</field>
+      <field type="float" name="ygyro" units="rad/s">Angular speed around Y axis</field>
+      <field type="float" name="zgyro" units="rad/s">Angular speed around Z axis</field>
     </message>
     <message id="184" name="ANGLE_OF_ATTACK">
       <description>Angle of Attack</description>
