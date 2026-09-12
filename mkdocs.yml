@@ -1,0 +1,19 @@
+site_name: MAVLink Dialect
+site_description: MAVLink dialect documentation
+
+theme:
+  name: readthedocs
+
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - Dialects:
+      - common: dialects/command.md
+      - debug: dialects/debug.md
+      - diagnostics: dialects/diagnostics.md
+      - model: dialects/model.md
+      - sensor: dialects/sensor.md
+      - system: dialects/system.md
+      - transport: dialects/transport.md
+  - Messages: messages/
+  - Enumerated Types: enums/

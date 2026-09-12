@@ -28,22 +28,30 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install MkDocs
+        run: pip install mkdocs
+
       - name: Generate documentation
         run: |
           python tools/generate_docs.py dialects -o docs
 
+      - name: Build documentation
+        run: |
+          mkdocs build
+
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
-          path: docs
+          path: site
 
   deploy:
+    needs: build
+
+    runs-on: ubuntu-latest
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
-    runs-on: ubuntu-latest
-    needs: build
 
     steps:
       - name: Deploy to GitHub Pages
