@@ -1,5 +1,6 @@
 site_name: MAVLink Dialect
 site_description: MAVLink dialect documentation
+site_url: https://teammeltingpoppo.github.io/mavlink-dialect/
 
 theme:
   name: readthedocs
