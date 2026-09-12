@@ -1,0 +1,381 @@
+<?xml version="1.0"?>
+<mavlink>
+  <version>3</version>
+  <enums>
+    <enum name="MAV_FRAME">
+      <description>Coordinate frames used by MAVLink. Not all frames are supported by all commands, messages, or vehicles.
+
+      Global frames use the following naming conventions:
+      - "GLOBAL": Global coordinate frame with WGS84 latitude/longitude and altitude positive over mean sea level (MSL) by default.
+        The following modifiers may be used with "GLOBAL":
+        - "RELATIVE_ALT": Altitude is relative to the vehicle home position rather than MSL.
+        - "TERRAIN_ALT": Altitude is relative to ground level rather than MSL.
+        - "INT": Latitude/longitude (in degrees) are scaled by multiplying by 1E7.
+
+      Local frames use the following naming conventions:
+      - "LOCAL": Origin of local frame is fixed relative to earth. Unless otherwise specified this origin is the origin of the vehicle position-estimator ("EKF").
+      - "BODY": Origin of local frame travels with the vehicle. NOTE, "BODY" does NOT indicate alignment of frame axis with vehicle attitude.
+      - "OFFSET": Deprecated synonym for "BODY" (origin travels with the vehicle). Not to be used for new frames.
+
+      Some deprecated frames do not follow these conventions (e.g. MAV_FRAME_BODY_NED and MAV_FRAME_BODY_OFFSET_NED).
+ </description>
+      <entry value="0" name="MAV_FRAME_GLOBAL">
+        <description>Global (WGS84) coordinate frame + altitude relative to mean sea level (MSL).</description>
+      </entry>
+      <entry value="1" name="MAV_FRAME_LOCAL_NED">
+        <description>NED local tangent frame (x: North, y: East, z: Down) with origin fixed relative to earth.</description>
+      </entry>
+      <entry value="2" name="MAV_FRAME_MISSION">
+        <description>NOT a coordinate frame, indicates a mission command.</description>
+      </entry>
+      <entry value="3" name="MAV_FRAME_GLOBAL_RELATIVE_ALT">
+        <description>
+          Global (WGS84) coordinate frame + altitude relative to the home position.
+        </description>
+      </entry>
+      <entry value="4" name="MAV_FRAME_LOCAL_ENU">
+        <description>ENU local tangent frame (x: East, y: North, z: Up) with origin fixed relative to earth.</description>
+      </entry>
+      <entry value="7" name="MAV_FRAME_LOCAL_OFFSET_NED">
+        <description>NED local tangent frame (x: North, y: East, z: Down) with origin that travels with the vehicle.</description>
+      </entry>
+      <entry value="10" name="MAV_FRAME_GLOBAL_TERRAIN_ALT">
+        <description>Global (WGS84) coordinate frame with AGL altitude (altitude at ground level).</description>
+      </entry>
+      <entry value="12" name="MAV_FRAME_BODY_FRD">
+        <description>FRD local frame aligned to the vehicle's attitude (x: Forward, y: Right, z: Down) with an origin that travels with vehicle.</description>
+      </entry>
+      <entry value="20" name="MAV_FRAME_LOCAL_FRD">
+        <description>FRD local tangent frame (x: Forward, y: Right, z: Down) with origin fixed relative to earth. The forward axis is aligned to the front of the vehicle in the horizontal plane.</description>
+      </entry>
+      <entry value="21" name="MAV_FRAME_LOCAL_FLU">
+        <description>FLU local tangent frame (x: Forward, y: Left, z: Up) with origin fixed relative to earth. The forward axis is aligned to the front of the vehicle in the horizontal plane.</description>
+      </entry>
+    </enum>
+
+    
+    <enum name="MAV_ESTIMATOR_TYPE">
+      <description>Enumeration of estimator types</description>
+      <entry value="0" name="MAV_ESTIMATOR_TYPE_UNKNOWN">
+        <description>Unknown type of the estimator.</description>
+      </entry>
+      <entry value="1" name="MAV_ESTIMATOR_TYPE_NAIVE">
+        <description>This is a naive estimator without any real covariance feedback.</description>
+      </entry>
+      <entry value="2" name="MAV_ESTIMATOR_TYPE_VISION">
+        <description>Computer vision based estimate. Might be up to scale.</description>
+      </entry>
+      <entry value="3" name="MAV_ESTIMATOR_TYPE_VIO">
+        <description>Visual-inertial estimate.</description>
+      </entry>
+      <entry value="4" name="MAV_ESTIMATOR_TYPE_GPS">
+        <description>Plain GPS estimate.</description>
+      </entry>
+      <entry value="5" name="MAV_ESTIMATOR_TYPE_GPS_INS">
+        <description>Estimator integrating GPS and inertial sensing.</description>
+      </entry>
+      <entry value="6" name="MAV_ESTIMATOR_TYPE_MOCAP">
+        <description>Estimate from external motion capturing system.</description>
+      </entry>
+      <entry value="7" name="MAV_ESTIMATOR_TYPE_LIDAR">
+        <description>Estimator based on lidar sensor input.</description>
+      </entry>
+      <entry value="8" name="MAV_ESTIMATOR_TYPE_AUTOPILOT">
+        <description>Estimator on autopilot.</description>
+      </entry>
+    </enum>
+    
+    <enum name="POSITION_TARGET_TYPEMASK" bitmask="true">
+      <description>Bitmap to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 9 is set the floats afx afy afz should be interpreted as force instead of acceleration.</description>
+      <entry value="1" name="POSITION_TARGET_TYPEMASK_X_IGNORE">
+        <description>Ignore position x</description>
+      </entry>
+      <entry value="2" name="POSITION_TARGET_TYPEMASK_Y_IGNORE">
+        <description>Ignore position y</description>
+      </entry>
+      <entry value="4" name="POSITION_TARGET_TYPEMASK_Z_IGNORE">
+        <description>Ignore position z</description>
+      </entry>
+      <entry value="8" name="POSITION_TARGET_TYPEMASK_VX_IGNORE">
+        <description>Ignore velocity x</description>
+      </entry>
+      <entry value="16" name="POSITION_TARGET_TYPEMASK_VY_IGNORE">
+        <description>Ignore velocity y</description>
+      </entry>
+      <entry value="32" name="POSITION_TARGET_TYPEMASK_VZ_IGNORE">
+        <description>Ignore velocity z</description>
+      </entry>
+      <entry value="64" name="POSITION_TARGET_TYPEMASK_AX_IGNORE">
+        <description>Ignore acceleration x</description>
+      </entry>
+      <entry value="128" name="POSITION_TARGET_TYPEMASK_AY_IGNORE">
+        <description>Ignore acceleration y</description>
+      </entry>
+      <entry value="256" name="POSITION_TARGET_TYPEMASK_AZ_IGNORE">
+        <description>Ignore acceleration z</description>
+      </entry>
+      <entry value="512" name="POSITION_TARGET_TYPEMASK_FORCE_SET">
+        <description>Use force instead of acceleration</description>
+      </entry>
+      <entry value="1024" name="POSITION_TARGET_TYPEMASK_YAW_IGNORE">
+        <description>Ignore yaw</description>
+      </entry>
+      <entry value="2048" name="POSITION_TARGET_TYPEMASK_YAW_RATE_IGNORE">
+        <description>Ignore yaw rate</description>
+      </entry>
+    </enum>
+    <enum name="AIRSPEED_SENSOR_FLAGS" bitmask="true">
+      <description>Airspeed sensor flags</description>
+      <entry value="1" name="AIRSPEED_SENSOR_UNHEALTHY">
+        <description>Airspeed sensor is unhealthy</description>
+      </entry>
+      <entry value="2" name="AIRSPEED_SENSOR_USING">
+        <description>True if the data from this sensor is being actively used by the flight controller for guidance, navigation or control.</description>
+      </entry>
+    </enum>
+    
+    <enum name="UTM_FLIGHT_STATE">
+      <description>Airborne status of UAS.</description>
+      <entry value="1" name="UTM_FLIGHT_STATE_UNKNOWN">
+        <description>The flight state can't be determined.</description>
+      </entry>
+      <entry value="2" name="UTM_FLIGHT_STATE_GROUND">
+        <description>UAS on ground.</description>
+      </entry>
+      <entry value="3" name="UTM_FLIGHT_STATE_AIRBORNE">
+        <description>UAS airborne.</description>
+      </entry>
+      <entry value="16" name="UTM_FLIGHT_STATE_EMERGENCY">
+        <description>UAS is in an emergency flight state.</description>
+      </entry>
+      <entry value="32" name="UTM_FLIGHT_STATE_NOCTRL">
+        <description>UAS has no active controls.</description>
+      </entry>
+    </enum>
+    <enum name="UTM_DATA_AVAIL_FLAGS" bitmask="true">
+      <description>Flags for the global position report.</description>
+      <entry value="1" name="UTM_DATA_AVAIL_FLAGS_TIME_VALID">
+        <description>The field time contains valid data.</description>
+      </entry>
+      <entry value="2" name="UTM_DATA_AVAIL_FLAGS_UAS_ID_AVAILABLE">
+        <description>The field uas_id contains valid data.</description>
+      </entry>
+      <entry value="4" name="UTM_DATA_AVAIL_FLAGS_POSITION_AVAILABLE">
+        <description>The fields lat, lon and h_acc contain valid data.</description>
+      </entry>
+      <entry value="8" name="UTM_DATA_AVAIL_FLAGS_ALTITUDE_AVAILABLE">
+        <description>The fields alt and v_acc contain valid data.</description>
+      </entry>
+      <entry value="16" name="UTM_DATA_AVAIL_FLAGS_RELATIVE_ALTITUDE_AVAILABLE">
+        <description>The field relative_alt contains valid data.</description>
+      </entry>
+      <entry value="32" name="UTM_DATA_AVAIL_FLAGS_HORIZONTAL_VELO_AVAILABLE">
+        <description>The fields vx and vy contain valid data.</description>
+      </entry>
+      <entry value="64" name="UTM_DATA_AVAIL_FLAGS_VERTICAL_VELO_AVAILABLE">
+        <description>The field vz contains valid data.</description>
+      </entry>
+      <entry value="128" name="UTM_DATA_AVAIL_FLAGS_NEXT_WAYPOINT_AVAILABLE">
+        <description>The fields next_lat, next_lon and next_alt contain valid data.</description>
+      </entry>
+    </enum>
+  </enums>
+  <messages>
+    <message id="30" name="ATTITUDE">
+      <description>The attitude in the aeronautical frame (right-handed, Z-down, Y-right, X-front, ZYX, intrinsic).</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="roll" units="rad">Roll angle (-pi..+pi)</field>
+      <field type="float" name="pitch" units="rad">Pitch angle (-pi..+pi)</field>
+      <field type="float" name="yaw" units="rad">Yaw angle (-pi..+pi)</field>
+      <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
+      <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
+      <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
+    </message>
+    <message id="31" name="ATTITUDE_QUATERNION">
+      <description>The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right), expressed as quaternion. Quaternion order is w, x, y, z and a zero rotation would be expressed as (1 0 0 0).</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="q1">Quaternion component 1, w (1 in null-rotation)</field>
+      <field type="float" name="q2">Quaternion component 2, x (0 in null-rotation)</field>
+      <field type="float" name="q3">Quaternion component 3, y (0 in null-rotation)</field>
+      <field type="float" name="q4">Quaternion component 4, z (0 in null-rotation)</field>
+      <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
+      <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
+      <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
+      <extensions/>
+      <field type="float[4]" name="repr_offset_q" invalid="[0]">Rotation offset by which the attitude quaternion and angular speed vector should be rotated for user display (quaternion with [w, x, y, z] order, zero-rotation is [1, 0, 0, 0], send [0, 0, 0, 0] if field not supported). This field is intended for systems in which the reference attitude may change during flight. For example, tailsitters VTOLs rotate their reference attitude by 90 degrees between hover mode and fixed wing mode, thus repr_offset_q is equal to [1, 0, 0, 0] in hover mode and equal to [0.7071, 0, 0.7071, 0] in fixed wing mode.</field>
+    </message>
+    
+    <message id="33" name="GLOBAL_POSITION_INT">
+      <description>The filtered global position (e.g. fused GPS and accelerometers). The position is in GPS-frame (right-handed, Z-up). It is designed as scaled integer message since the resolution of float is not sufficient.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude, expressed</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude, expressed</field>
+      <field type="int32_t" name="alt" units="mm">Altitude (MSL). Note that virtually all GPS modules provide both WGS84 and MSL.</field>
+      <field type="int32_t" name="relative_alt" units="mm">Altitude above home</field>
+      <field type="int16_t" name="vx" units="cm/s">Ground X Speed (Latitude, positive north)</field>
+      <field type="int16_t" name="vy" units="cm/s">Ground Y Speed (Longitude, positive east)</field>
+      <field type="int16_t" name="vz" units="cm/s">Ground Z Speed (Altitude, positive down)</field>
+      <field type="uint16_t" name="hdg" units="cdeg" invalid="UINT16_MAX">Vehicle heading (yaw angle), 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
+    </message>
+    <!--
+    <message id="49" name="GPS_GLOBAL_ORIGIN">
+      <description>Publishes the GPS coordinates of the vehicle local origin (0,0,0) position. Emitted whenever a new GPS-Local position mapping is requested or set - e.g. following SET_GPS_GLOBAL_ORIGIN message.</description>
+      <field type="int32_t" name="latitude" units="degE7">Latitude (WGS84)</field>
+      <field type="int32_t" name="longitude" units="degE7">Longitude (WGS84)</field>
+      <field type="int32_t" name="altitude" units="mm">Altitude (MSL). Positive for up.</field>
+      <extensions/>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+    </message>
+    <message id="61" name="ATTITUDE_QUATERNION_COV">
+      <description>The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right), expressed as quaternion. Quaternion order is w, x, y, z and a zero rotation would be expressed as (1 0 0 0).</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation)</field>
+      <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
+      <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
+      <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
+      <field type="float[9]" name="covariance" invalid="[NaN:]">Row-major representation of a 3x3 attitude covariance matrix (states: roll, pitch, yaw; first three entries are the first ROW, next three entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
+    </message>
+    <message id="62" name="NAV_CONTROLLER_OUTPUT">
+      <description>The state of the navigation and position controller.</description>
+      <field type="float" name="nav_roll" units="deg">Current desired roll</field>
+      <field type="float" name="nav_pitch" units="deg">Current desired pitch</field>
+      <field type="int16_t" name="nav_bearing" units="deg">Current desired heading</field>
+      <field type="int16_t" name="target_bearing" units="deg">Bearing to current waypoint/target</field>
+      <field type="uint16_t" name="wp_dist" units="m">Distance to active waypoint</field>
+      <field type="float" name="alt_error" units="m">Current altitude error</field>
+      <field type="float" name="aspd_error" units="m/s">Current airspeed error</field>
+      <field type="float" name="xtrack_error" units="m">Current crosstrack error on x-y plane</field>
+    </message>
+    <message id="63" name="GLOBAL_POSITION_INT_COV">
+      <description>The filtered global position (e.g. fused GPS and accelerometers). The position is in GPS-frame (right-handed, Z-up). It  is designed as scaled integer message since the resolution of float is not sufficient. NOTE: This message is intended for onboard networks / companion computers and higher-bandwidth links and optimized for accuracy and completeness. Please use the GLOBAL_POSITION_INT message for a minimal subset.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="estimator_type" enum="MAV_ESTIMATOR_TYPE">Class id of the estimator this estimate originated from.</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude</field>
+      <field type="int32_t" name="alt" units="mm">Altitude in meters above MSL</field>
+      <field type="int32_t" name="relative_alt" units="mm">Altitude above ground</field>
+      <field type="float" name="vx" units="m/s">Ground X Speed (Latitude)</field>
+      <field type="float" name="vy" units="m/s">Ground Y Speed (Longitude)</field>
+      <field type="float" name="vz" units="m/s">Ground Z Speed (Altitude)</field>
+      <field type="float[36]" name="covariance" invalid="[NaN:]">Row-major representation of a 6x6 position and velocity 6x6 cross-covariance matrix (states: lat, lon, alt, vx, vy, vz; first six entries are the first ROW, next six entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
+    </message>
+    <message id="64" name="LOCAL_POSITION_NED_COV">
+      <description>The filtered local position (e.g. fused computer vision and accelerometers). Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint8_t" name="estimator_type" enum="MAV_ESTIMATOR_TYPE">Class id of the estimator this estimate originated from.</field>
+      <field type="float" name="x" units="m">X Position</field>
+      <field type="float" name="y" units="m">Y Position</field>
+      <field type="float" name="z" units="m">Z Position</field>
+      <field type="float" name="vx" units="m/s">X Speed</field>
+      <field type="float" name="vy" units="m/s">Y Speed</field>
+      <field type="float" name="vz" units="m/s">Z Speed</field>
+      <field type="float" name="ax" units="m/s/s">X Acceleration</field>
+      <field type="float" name="ay" units="m/s/s">Y Acceleration</field>
+      <field type="float" name="az" units="m/s/s">Z Acceleration</field>
+      <field type="float[45]" name="covariance" invalid="[NaN:]">Row-major representation of position, velocity and acceleration 9x9 cross-covariance matrix upper right triangle (states: x, y, z, vx, vy, vz, ax, ay, az; first nine entries are the first ROW, next eight entries are the second row, etc.). If unknown, assign NaN value to first element in the array.</field>
+    </message> -->
+    
+    <message id="87" name="POSITION_TARGET_GLOBAL_INT">
+      <description>Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot. This should match the commands sent in SET_POSITION_TARGET_GLOBAL_INT if the vehicle is being controlled this way.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot). The rationale for the timestamp in the setpoint is to allow the system to compensate for the transport delay of the setpoint. This allows the system to compensate processing latency.</field>
+      <field type="uint8_t" name="coordinate_frame" enum="MAV_FRAME">Valid options are: MAV_FRAME_GLOBAL = 0, MAV_FRAME_GLOBAL_RELATIVE_ALT = 3, MAV_FRAME_GLOBAL_TERRAIN_ALT = 10 (MAV_FRAME_GLOBAL_INT, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT are allowed synonyms, but have been deprecated)</field>
+      <field type="uint16_t" name="type_mask" enum="POSITION_TARGET_TYPEMASK">Bitmap to indicate which dimensions should be ignored by the vehicle.</field>
+      <field type="int32_t" name="lat_int" units="degE7">Latitude in WGS84 frame</field>
+      <field type="int32_t" name="lon_int" units="degE7">Longitude in WGS84 frame</field>
+      <field type="float" name="alt" units="m">Altitude (MSL, AGL or relative to home altitude, depending on frame)</field>
+      <field type="float" name="vx" units="m/s">X velocity in NED frame</field>
+      <field type="float" name="vy" units="m/s">Y velocity in NED frame</field>
+      <field type="float" name="vz" units="m/s">Z velocity in NED frame</field>
+      <field type="float" name="afx" units="m/s/s">X acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
+      <field type="float" name="afy" units="m/s/s">Y acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
+      <field type="float" name="afz" units="m/s/s">Z acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N</field>
+      <field type="float" name="yaw" units="rad">yaw setpoint</field>
+      <field type="float" name="yaw_rate" units="rad/s">yaw rate setpoint</field>
+    </message>
+    <message id="89" name="LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET">
+      <description>The offset in X, Y, Z and yaw between the LOCAL_POSITION_NED messages of MAV X and the global coordinate frame in NED coordinates. Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="x" units="m">X Position</field>
+      <field type="float" name="y" units="m">Y Position</field>
+      <field type="float" name="z" units="m">Z Position</field>
+      <field type="float" name="roll" units="rad">Roll</field>
+      <field type="float" name="pitch" units="rad">Pitch</field>
+      <field type="float" name="yaw" units="rad">Yaw</field>
+    </message>
+    
+    <message id="141" name="ALTITUDE">
+      <description>The current system altitude.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="float" name="altitude_monotonic" units="m">This altitude measure is initialized on system boot and monotonic (it is never reset, but represents the local altitude change). The only guarantee on this field is that it will never be reset and is consistent within a flight. The recommended value for this field is the uncorrected barometric altitude at boot time. This altitude will also drift and vary between flights.</field>
+      <field type="float" name="altitude_amsl" units="m">This altitude measure is strictly above mean sea level and might be non-monotonic (it might reset on events like GPS lock or when a new QNH value is set). It should be the altitude to which global altitude waypoints are compared to. Note that it is *not* the GPS altitude, however, most GPS modules already output MSL by default and not the WGS84 altitude.</field>
+      <field type="float" name="altitude_local" units="m">This is the local altitude in the local coordinate frame. It is not the altitude above home, but in reference to the coordinate origin (0, 0, 0). It is up-positive.</field>
+      <field type="float" name="altitude_relative" units="m">This is the altitude above the home position. It resets on each change of the current home position.</field>
+      <field type="float" name="altitude_terrain" units="m">This is the altitude above terrain. It might be fed by a terrain database or an altimeter. Values smaller than -1000 should be interpreted as unknown.</field>
+      <field type="float" name="bottom_clearance" units="m">This is not the altitude, but the clear space below the system according to the fused clearance estimate. It generally should max out at the maximum range of e.g. the laser altimeter. It is generally a moving target. A negative value indicates no measurement available.</field>
+    </message>
+    
+    <message id="295" name="AIRSPEED">
+      <description>Airspeed information from a sensor.</description>
+      <field type="uint8_t" name="id" instance="true">Sensor ID.</field>
+      <field type="float" name="airspeed" units="m/s">Calibrated airspeed (CAS).</field>
+      <field type="int16_t" name="temperature" units="cdegC" invalid="INT16_MAX">Temperature.</field>
+      <field type="float" name="raw_press" units="hPa" invalid="NaN">Raw differential pressure.</field>
+      <field type="uint8_t" name="flags" enum="AIRSPEED_SENSOR_FLAGS">Airspeed sensor flags.</field>
+    </message>
+
+    
+    <!-- <message id="340" name="UTM_GLOBAL_POSITION">
+      <description>The global position resulting from GPS and sensor fusion.</description>
+      <field type="uint64_t" name="time" units="us">Time of applicability of position (microseconds since UNIX epoch).</field>
+      <field type="uint8_t[18]" name="uas_id">Unique UAS ID.</field>
+      <field type="int32_t" name="lat" units="degE7">Latitude (WGS84)</field>
+      <field type="int32_t" name="lon" units="degE7">Longitude (WGS84)</field>
+      <field type="int32_t" name="alt" units="mm">Altitude (WGS84)</field>
+      <field type="int32_t" name="relative_alt" units="mm">Altitude above ground</field>
+      <field type="int16_t" name="vx" units="cm/s">Ground X speed (latitude, positive north)</field>
+      <field type="int16_t" name="vy" units="cm/s">Ground Y speed (longitude, positive east)</field>
+      <field type="int16_t" name="vz" units="cm/s">Ground Z speed (altitude, positive down)</field>
+      <field type="uint16_t" name="h_acc" units="mm">Horizontal position uncertainty (standard deviation)</field>
+      <field type="uint16_t" name="v_acc" units="mm">Altitude uncertainty (standard deviation)</field>
+      <field type="uint16_t" name="vel_acc" units="cm/s">Speed uncertainty (standard deviation)</field>
+      <field type="int32_t" name="next_lat" units="degE7">Next waypoint, latitude (WGS84)</field>
+      <field type="int32_t" name="next_lon" units="degE7">Next waypoint, longitude (WGS84)</field>
+      <field type="int32_t" name="next_alt" units="mm">Next waypoint, altitude (WGS84)</field>
+      <field type="uint16_t" name="update_rate" units="cs" invalid="0">Time until next update. Set to 0 if unknown or in data driven mode.</field>
+      <field type="uint8_t" name="flight_state" enum="UTM_FLIGHT_STATE">Flight state</field>
+      <field type="uint8_t" name="flags" enum="UTM_DATA_AVAIL_FLAGS">Bitwise OR combination of the data available flags.</field>
+    </message> -->
+
+    
+    <message id="180" name="EMPENNAGE_STATUS">
+      <description>Output status of the empennage.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="elevator" units="deg">Elevator position.</field>
+      <field type="float" name="rudder" units="deg">Rudder position.</field>
+    </message>
+    <message id="181" name="EMPENNAGE_COMMAND">
+      <description>Command to the empennage.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="elevator" units="deg">Elevator position command.</field>
+      <field type="float" name="rudder" units="deg">Rudder position command.</field>
+      <field type="float" name="elevator_trim" units="deg">Elevator trim command.</field>
+    </message>
+    <message id="182" name="PILOT_POWER">
+      <description>Output status of the pilot power.</description>
+      <field type="float" name="power" units="W">Power</field>
+      <field type="float" name="cadence" units="rpm">Cadence</field>
+    </message>
+
+    <message id="184" name="ANGLE_OF_ATTACK">
+      <description>Angle of Attack</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="aoa" units="deg">Angle of attack</field>
+    </message>
+    <message id="185" name="ANGLE_OF_SLIDESLIP">
+      <description>Angle of Slideslip</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="aos" units="deg">Angle of slideslip</field>
+    </message>
+
+  </messages>
+</mavlink>

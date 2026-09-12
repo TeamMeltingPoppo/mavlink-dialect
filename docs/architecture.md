@@ -48,14 +48,13 @@ MAVLink messageに関する仕様は、本repositoryの定義を正とし、各f
 - Ground Control Systemの実装
 - Data loggerの実装
 
-MAVLink packetの符号化および復号は、MAVLink dialectを入力として生成される共有ライブラリが担当する。Transportは、MAVLink packetを通信媒体上で転送する役割を担当します。FirmwareおよびGround Control Systemは、MAVLink messageを利用して、それぞれの機能を実装します。
+MAVLink packetの符号化および復号は、MAVLink dialectを入力として生成される共有ライブラリが担当します。Transportは、MAVLink packetを通信媒体上で転送する役割を担当します。FirmwareおよびGround Control Systemは、MAVLink messageを利用して、それぞれの機能を実装します。
 
 本repositoryは、MAVLinkのwire formatそのものを変更または再定義しません。MAVLinkが規定するwire formatに従い、本システムで使用するMAVLink dialectを定義します。
 
 本repositoryの変更によって生成される共有ライブラリおよび各Firmwareの実装は、本repositoryで定義されたMAVLink dialectに依存します。したがって、MAVLink dialectの変更と、その変更を利用する実装の更新は、CIおよびリリースプロセスによって管理します。
 
 ## System Overview
-
 
 Swingbyの電装の通信システムは、複数のNodeがSystem Busを介して接続された構成になっています。各Nodeは、GNSS、慣性計測、対気速度計測、機体制御、電源管理、データ記録、テレメトリまたは表示など、それぞれ異なる役割を持っています。
 
@@ -127,9 +126,6 @@ Protocol Stackの各要素は、複数のrepositoryに分割して管理しま�
 
 `mavlink-dialect`を入力として生成されるC++ライブラリを提供するrepositoryである。各firmwareはこのライブラリを利用して、MAVLink messageの生成および解析と、MAVLink 2のwire formatに従ったMAVLink packetのserializationおよびdeserializationを行う。
 
-#### `mavlink-canfd`
-
-MAVLink packetをCAN FD上で転送するためのTransportを提供するrepositoryである。CAN FD frameへの分割およびMAVLink packetへの再構成など、CAN FD固有の転送処理を担当する。一方で、個々のMAVLink messageの構造や意味は解釈しない。
 
 #### 各repositoryの責務
 
@@ -145,70 +141,15 @@ flowchart TB
         Library["Generated C++ Library"]
     end
 
-    subgraph CANFD["mavlink-canfd"]
-        Transport["CAN FD Transport"]
-    end
-
     Message["MAVLink Message"]
     Packet["MAVLink Packet"]
-    Frame["CAN FD Frame"]
 
     Definition -.->|defines| Message
     Message -->|processed by| Library
     Library -->|serializes| Packet
-    Packet -->|transported by| Transport
-    Transport -->|encodes| Frame
 ```
 
-各firmwareは、原則として`mavlink-cpp`を利用してMAVLink messageを扱い、Transportの実装には`mavlink-canfd`を利用します。これにより、firmwareごとにMAVLink packetのserializationやCAN FD Transportを個別に実装する必要がありません。
-
-### Data Flow
-
-この節では、送受信を行う際に具体的にどのような処理が行われるかを説明します。
-
-#### 送信処理
-
-MAVLink messageを送信する場合、送信側のApplicationは`mavlink-cpp`が提供する機能を利用してMAVLink messageを生成します。MAVLink messageはMAVLink 2のwire formatに従ってMAVLink packetへ符号化され、その後、`mavlink-canfd`によってCAN FD上で転送されます。
-
-送信側における処理の流れを以下に示します。
-
-```mermaid
-flowchart LR
-    Application["Application"]
-    Message["MAVLink Message"]
-    Packet["MAVLink Packet"]
-    Frame["CAN FD Frame"]
-    Bus["CAN FD Bus"]
-
-    Application -->|create| Message
-    Message -->|serialize| Packet
-    Packet -->|transport| Frame
-    Frame --> Bus
-```
-
-#### 受信処理
-
-受信側では、CAN FD frameからMAVLink packetを復元し、MAVLink 2のwire formatに従ってMAVLink messageへ復号します。復号されたMAVLink messageは、受信側のApplicationによって利用されます。
-
-受信側における処理の流れを以下に示します。
-
-```mermaid
-flowchart RL
-    Application["Application"]
-    Message["MAVLink Message"]
-    Packet["MAVLink Packet"]
-    Frame["CAN FD Frame"]
-    Bus["CAN FD Bus"]
-
-    Application -->|consume| Message
-    Message -->|deserialize| Packet
-    Packet -->|reassemble| Frame
-    Frame --> Bus
-```
-
-送信側と受信側では処理の方向が逆になります。送信側ではMAVLink messageをMAVLink packetへ符号化した後、CAN FD frameとして転送します。受信側ではCAN FD frameからMAVLink packetを復元した後、MAVLink messageへ復号します。
-
-この処理において、MAVLink messageの仕様は`mavlink-dialect`、MAVLink packetのserializationおよびdeserializationは`mavlink-cpp`、CAN FD上での転送処理は`mavlink-canfd`がそれぞれ担当します。
+各firmwareは、原則として`mavlink-cpp`を利用してMAVLink messageを扱います。これにより、firmwareごとにMAVLink packetのserializationを個別に実装する必要がありません。
 
 ## Message Architecture
 
@@ -252,32 +193,22 @@ Firmwareは、Nodeの機能に応じて必要なMAVLink messageを利用する�
 
 Firmware固有の処理、タスク構成、ハードウェア制御およびTransport Driverの実装は、本repositoryの責任範囲ではありません。
 
-### Data Logger
+### ログ
 
-Data Loggerは、System Bus上で交換されるMAVLink messageを受信し、後から解析可能な形式で記録するNodeです。
+ロガーは、System Bus上で交換されるMAVLink messageを受信し、後から解析可能な形式で記録するようものです。
 
-Data Loggerは、記録対象となるMAVLink messageを受信し、その内容および受信時刻などの必要な情報を記録します。記録形式および記録媒体はData Logger側で定義します。
+記録対象となるMAVLink messageを受信し、その内容および受信時刻などの必要な情報を記録します。記録形式および記録媒体はロガー側で定義します。
 
-Data Loggerは、MAVLink messageの定義を変更せず、本repositoryで定義されたmessageをそのまま記録および解析できることを基本とします。
+ロガーは、MAVLink messageの定義を変更せず、本repositoryで定義されたmessageをそのまま記録および解析できることを基本とします。
 
-Data LoggerがMAVLink packetそのものを保存する場合、そのpacketはMAVLink 2のwire formatに従ったデータとして扱います。MAVLink messageへ復号したデータを保存する場合は、元のmessageとの対応を追跡できるようにします。
+ロガーがMAVLink packetそのものを保存する場合、そのpacketはMAVLink 2のwire formatに従ったデータとして扱います。MAVLink messageへ復号したデータを保存する場合は、元のmessageとの対応を追跡できるようにします。
 
 ### Ground Control System
 
-Ground Control System (GCS)は、機体および電装システムの状態を監視し、必要に応じてNodeへcommandを送信する外部システムです。
+Ground Control System (GCS)は、機体および電装システムの状態を監視し、必要に応じてNodeへcommandを送信するソフトウェアです。
 
-GCSは、本repositoryで定義されたMAVLink dialectを利用して、機体側のNodeとMAVLink messageを交換します。GCSは、firmwareと同じmessage定義を使用し、独自のmessage定義を持ちません。
+GCSは、本repositoryで定義されたMAVLink dialectを利用して、機体側のNodeとMAVLink messageを送受信します。GCSは、firmwareと同じmessage定義を使用させます。また、独自のmessage定義を持ってはいけないことにします。
 
 GCSとAvionics Systemとの間の通信はTelemetry Nodeを介して行います。Telemetry Nodeは、機体側のTransportとGCS側の通信方式との間を接続します。
 
-GCSのUser Interface、内部データモデル、通信処理および表示方法は、本repositoryの責任範囲ではありません。
-
-### Generated Libraries
-
-本repositoryのMAVLink dialectから、各言語および環境で利用するためのMAVLinkライブラリを生成します。
-
-生成されたライブラリは、MAVLink messageの定義とMAVLink 2のwire formatを各実装で一貫して利用するために使用します。生成物は、MAVLink dialectの特定のversionと対応付けて管理します。
-
-生成されたライブラリの生成処理および配布方法は、本repositoryのCIおよびrelease processで管理します。
-
-外部システムは、原則として生成されたライブラリを利用し、MAVLink messageのserializationおよびdeserializationを独自に実装しません。
+GCSの細かい実装については、本repositoryで扱う範囲ではありません。

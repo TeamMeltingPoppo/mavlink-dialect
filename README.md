@@ -1,79 +1,82 @@
 # MAVLink Dialect
 
-本repositoryは、Avionics Systemで使用するMAVLink dialectを管理する。
+本リポジトリは、システム内で使用する **MAVLink通信仕様（Dialect）を一元管理するリポジトリ**です。
 
-MAVLinkは、Node間で交換するmessageを定義し、異なるfirmwareおよび外部システム間で共通のデータ形式を使用するための通信プロトコルである。本repositoryでは、システム固有のMAVLink messageを定義し、その定義を各firmwareおよび外部システムで共有する。
+MAVLinkを通信プロトコルとして利用し、デバイスやアプリケーション間で交換するデータの構造・意味を共通化します。
 
-## Repository Structure
+ここで定義した通信仕様を基準として、C++、Rust、Pythonなど各言語向けのライブラリを生成・提供し、ファームウェアやPCアプリケーションから同じ通信仕様を利用できるようにします。
 
-```text
-mavlink-dialect/
-├── dialect/
-│   └── *.xml
-├── docs/
-│   ├── architecture.md
-│   └── development.md
-├── tests/
-├── tools/
-├── .github/
-│   └── workflows/
-└── README.md
+## プロジェクト全体像
+
+本プロジェクトでは、**通信仕様と、その仕様を利用するソフトウェアを分離**して管理します。
+
+```mermaid
+flowchart TD
+    Dialect["mavlink-dialect<br/>通信仕様 / IDL"]
+
+    Cpp["mavlink-cpp<br/>C++ Binding"]
+    Rust["mavlink-rs<br/>Rust Binding"]
+    Python["mavlink-python<br/>Python Middleware"]
+    App["Application / Tools"]
+
+    Dialect --> Cpp
+    Dialect --> Rust
+    Dialect --> Python
+
+    Cpp --> Firmware
+    Cpp -.-> App
+
+    Rust --> Firmware
+    Rust --> App
+
+    Python --> App
 ```
 
-`dialect/`にはMAVLink messageの定義を配置する。
+`mavlink-dialect` は、**「何をどのような形式で通信するか」** を定義します。
 
-`docs/`には、本repositoryのarchitectureおよびdevelopment processに関する文書を配置する。
+`mavlink-cpp`、`mavlink-rs` は、それぞれC++、RustからMAVLink通信仕様を利用するためのBindingです。組み込みファームウェアだけでなく、PC上で動作するアプリケーションからも利用できます。
 
-`tests/`には、dialectおよび生成物を検証するためのtestを配置する。
+`mavlink-python` は、PythonからMAVLinkを利用するためのMiddlewareです。通信機能に加えて、Publisher / Subscriber、Recorder、Replayなど、アプリケーション開発に必要な機能を提供します。
 
-`tools/`には、developmentおよびvalidationを補助するtoolを配置する。
+このように通信仕様を実装から分離することで、使用する言語や実行環境が異なっても、同じ通信仕様を共有できます。
 
-`.github/workflows/`には、Continuous Integrationおよびその他のautomationに使用するGitHub Actions workflowを配置する。
+## 各リポジトリの役割
 
-## Documentation
+| リポジトリ                 | 役割                         |
+| -------------------- | -------------------------- |
+|[mavlink-dialect](https://github.com/TeamMeltingPoppo/mavlink-dialect)| MAVLink通信仕様 / IDLの定義       |
+| [mavlink-cpp](https://github.com/TeamMeltingPoppo/mavlink-cpp)| C++向けMAVLink Binding       |
+|[mavlink-rs](https://github.com/TeamMeltingPoppo/mavlink.rs)| Rust向けMAVLink Binding      |
+|[mavlink-python](https://github.com/TeamMeltingPoppo/mavlink-python)| Python向けMAVLink Middleware |
+|[template-platformio](https://github.com/TeamMeltingPoppo/template-platformio)| ファームウェア開発環境の共通テンプレート       |
 
-本repositoryの設計および開発方法については、以下のdocumentを参照する。
+各リポジトリは連携して使用しますが、それぞれ異なる責務を持ちます。
 
-* [Architecture](docs/architecture.md) — システム構成、Protocol Architecture、Message ArchitectureおよびExternal Interfaces
-* [Development](docs/development.md) — 開発workflow、code generation、validation、CI、dependency managementおよびrelease process
+特に、**通信仕様の定義は `mavlink-dialect` に集約し、各言語側で通信仕様を個別に定義しない**ことを基本とします。
 
-## Usage
+## 通信仕様の変更
 
-MAVLink messageを追加または変更する場合は、`dialect/`にあるMAVLink dialect definitionを変更する。
+MAVLinkのメッセージを追加・変更する場合は、まず `mavlink-dialect` の定義を変更します。
 
-変更されたdialectはCIによって検証され、MAVLink generatorによるcode generationおよび生成されたC++ codeのvalidationが実行される。
+```mermaid
+flowchart LR
+    Define["メッセージを定義・変更<br/>mavlink-dialect"]
+    Cpp["mavlink-cpp"]
+    Rust["mavlink-rs"]
+    Python["mavlink-python"]
+    Firmware["Firmware"]
+    Application["Applications / Tools"]
 
-生成されたC++ libraryは、下流repositoryである`mavlink-cpp`から利用する。
+    Define -- Code Generation --> Cpp
+    Define -- Code Generation --> Rust
+    Define -- Code Generation --> Python
 
-```text
-mavlink-dialect
-       │
-       │ MAVLink Message Definition
-       ▼
-mavlink-cpp
-       │
-       │ Generated C++ Library
-       ▼
-Firmware / External Systems
+    Cpp    -- Renovate / Dependantbot --> Firmware
+    Rust   -- Renovate / Dependantbot --> Firmware
+    Rust   -- Renovate / Dependantbot --> Application
+    Python -- Renovate / Dependantbot --> Application
 ```
 
-各firmwareは、原則として生成された`mavlink-cpp`をdependencyとして利用する。MAVLink messageのserializationおよびdeserializationをfirmware側で独自に実装してはならない。
+通信仕様を変更した際には、生成されたライブラリとの対応関係や互換性を確認し、各リポジトリで利用するバージョンを管理します。
 
-## Design Principles
-
-本repositoryでは、以下の原則に従ってMAVLink dialectを管理する。
-
-- MAVLink messageの定義を単一のsource of truthとして管理する。
-- Messageの構造および意味を明確に定義する。
-- MAVLink messageの定義とTransportの実装を分離する。
-- 生成されたcodeを手動で変更しない。
-- Message definitionの変更をCIによって検証する。
-- 下流repositoryではversion付きの生成libraryを利用する。
-
-詳細な設計方針については[Architecture](docs/architecture.md)を参照する。
-
-## Development
-
-開発環境の構築、messageの追加方法、code generation、validation、CIおよびreleaseについては[Development](docs/development.md)を参照する。
-
-Pull Requestを作成した場合、CIによってdialectのvalidationおよびgenerated codeの検証が実行される。
+詳細な設計方針については [Architecture](docs/architecture.md) を参照してください。

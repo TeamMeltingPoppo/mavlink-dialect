@@ -1,0 +1,427 @@
+<?xml version="1.0"?>
+<mavlink>
+  <version>3</version>
+  <enums>
+  
+    <enum name="MAV_AUTOPILOT">
+      <description>Micro air vehicle / autopilot classes. This identifies the individual model.</description>
+      <entry value="0" name="MAV_AUTOPILOT_GENERIC">
+        <description>Generic autopilot, full support for everything</description>
+      </entry>
+      <entry value="1" name="MAV_AUTOPILOT_RESERVED">
+        <description>Reserved for future use.</description>
+      </entry>
+      <entry value="8" name="MAV_AUTOPILOT_INVALID">
+        <description>No valid autopilot, e.g. a GCS or other MAVLink component</description>
+      </entry>
+    </enum>
+    <enum name="MAV_TYPE">
+      <description>MAVLINK component type reported in HEARTBEAT message. Flight controllers must report the type of the vehicle on which they are mounted (e.g. MAV_TYPE_OCTOROTOR). All other components must report a value appropriate for their type (e.g. a camera must use MAV_TYPE_CAMERA).</description>
+      <entry value="0" name="MAV_TYPE_GENERIC">
+        <description>Generic micro air vehicle</description>
+      </entry>
+      <entry value="6" name="MAV_TYPE_GCS">
+        <description>Operator control unit / ground control station</description>
+      </entry>
+      <entry value="10" name="MAV_TYPE_GROUND_ROVER">
+        <description>Ground rover</description>
+      </entry>
+      <entry value="11" name="MAV_TYPE_SURFACE_BOAT">
+        <description>Surface vessel, boat, ship</description>
+      </entry>
+      <entry value="12" name="MAV_TYPE_SUBMARINE">
+        <description>Submarine</description>
+      </entry>
+      <entry value="16" name="MAV_TYPE_FLAPPING_WING">
+        <description>Flapping wing</description>
+      </entry>
+      <entry value="18" name="MAV_TYPE_ONBOARD_CONTROLLER">
+        <description>Onboard companion controller</description>
+      </entry>
+      <entry value="26" name="MAV_TYPE_GIMBAL">
+        <description>Gimbal</description>
+      </entry>
+      <entry value="27" name="MAV_TYPE_ADSB">
+        <description>ADSB system</description>
+      </entry>
+      <entry value="30" name="MAV_TYPE_CAMERA">
+        <description>Camera</description>
+      </entry>
+      <entry value="31" name="MAV_TYPE_CHARGING_STATION">
+        <description>Charging station</description>
+      </entry>
+      <entry value="32" name="MAV_TYPE_FLARM">
+        <description>FLARM collision avoidance system</description>
+      </entry>
+      <entry value="33" name="MAV_TYPE_SERVO">
+        <description>Servo</description>
+      </entry>
+      <entry value="36" name="MAV_TYPE_BATTERY">
+        <description>Battery</description>
+      </entry>
+      <entry value="38" name="MAV_TYPE_LOG">
+        <description>Log</description>
+      </entry>
+      <entry value="39" name="MAV_TYPE_OSD">
+        <description>OSD</description>
+      </entry>
+      <entry value="40" name="MAV_TYPE_IMU">
+        <description>IMU</description>
+      </entry>
+      <entry value="41" name="MAV_TYPE_GPS">
+        <description>GPS</description>
+      </entry>
+      <entry value="42" name="MAV_TYPE_WINCH">
+        <description>Winch</description>
+      </entry>
+      <entry value="44" name="MAV_TYPE_ILLUMINATOR">
+        <description>Illuminator. An illuminator is a light source that is used for lighting up dark areas external to the system: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light).</description>
+      </entry>
+      <entry value="48" name="MAV_TYPE_GRIPPER">
+        <description>Gripper</description>
+      </entry>
+      <entry value="49" name="MAV_TYPE_RADIO">
+        <description>Radio</description>
+      </entry>
+    </enum>
+    <enum name="MAV_MODE_FLAG" bitmask="true">
+      <description>These flags encode the MAV mode, see MAV_MODE enum for useful combinations.</description>
+      <entry value="128" name="MAV_MODE_FLAG_SAFETY_ARMED">
+        <description>0b10000000 MAV safety set to armed. Motors are enabled / running / can start. Ready to fly. Additional note: this flag is to be ignore when sent in the command MAV_CMD_DO_SET_MODE and MAV_CMD_COMPONENT_ARM_DISARM shall be used instead. The flag can still be used to report the armed state.</description>
+      </entry>
+      <entry value="64" name="MAV_MODE_FLAG_MANUAL_INPUT_ENABLED">
+        <description>0b01000000 remote control input is enabled.</description>
+      </entry>
+      <entry value="32" name="MAV_MODE_FLAG_HIL_ENABLED">
+        <description>0b00100000 hardware in the loop simulation. All motors / actuators are blocked, but internal software is full operational.</description>
+      </entry>
+      <entry value="16" name="MAV_MODE_FLAG_STABILIZE_ENABLED">
+        <description>0b00010000 system stabilizes electronically its attitude (and optionally position). It needs however further control inputs to move around.</description>
+      </entry>
+      <entry value="8" name="MAV_MODE_FLAG_GUIDED_ENABLED">
+        <description>0b00001000 guided mode enabled, system flies waypoints / mission items.</description>
+      </entry>
+      <entry value="4" name="MAV_MODE_FLAG_AUTO_ENABLED">
+        <description>0b00000100 autonomous mode enabled, system finds its own goal positions. Guided flag can be set or not, depends on the actual implementation.</description>
+      </entry>
+      <entry value="2" name="MAV_MODE_FLAG_TEST_ENABLED">
+        <description>0b00000010 system has a test mode enabled. This flag is intended for temporary system tests and should not be used for stable implementations.</description>
+      </entry>
+      <entry value="1" name="MAV_MODE_FLAG_CUSTOM_MODE_ENABLED">
+        <description>0b00000001 system-specific custom mode is enabled. When using this flag to enable a custom mode all other flags should be ignored.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_MODE_FLAG_DECODE_POSITION" bitmask="true">
+      <description>These values encode the bit positions of the decode position. These values can be used to read the value of a flag bit by combining the base_mode variable with AND with the flag position value. The result will be either 0 or 1, depending on if the flag is set or not.</description>
+      <entry value="128" name="MAV_MODE_FLAG_DECODE_POSITION_SAFETY">
+        <description>First bit:  10000000</description>
+      </entry>
+      <entry value="64" name="MAV_MODE_FLAG_DECODE_POSITION_MANUAL">
+        <description>Second bit: 01000000</description>
+      </entry>
+      <entry value="32" name="MAV_MODE_FLAG_DECODE_POSITION_HIL">
+        <description>Third bit:  00100000</description>
+      </entry>
+      <entry value="16" name="MAV_MODE_FLAG_DECODE_POSITION_STABILIZE">
+        <description>Fourth bit: 00010000</description>
+      </entry>
+      <entry value="8" name="MAV_MODE_FLAG_DECODE_POSITION_GUIDED">
+        <description>Fifth bit:  00001000</description>
+      </entry>
+      <entry value="4" name="MAV_MODE_FLAG_DECODE_POSITION_AUTO">
+        <description>Sixth bit:   00000100</description>
+      </entry>
+      <entry value="2" name="MAV_MODE_FLAG_DECODE_POSITION_TEST">
+        <description>Seventh bit: 00000010</description>
+      </entry>
+      <entry value="1" name="MAV_MODE_FLAG_DECODE_POSITION_CUSTOM_MODE">
+        <description>Eighth bit: 00000001</description>
+      </entry>
+    </enum>
+    <enum name="MAV_STATE">
+      <entry value="0" name="MAV_STATE_UNINIT">
+        <description>Uninitialized system, state is unknown.</description>
+      </entry>
+      <entry value="1" name="MAV_STATE_BOOT">
+        <description>System is booting up.</description>
+      </entry>
+      <entry value="2" name="MAV_STATE_CALIBRATING">
+        <description>System is calibrating and not flight-ready.</description>
+      </entry>
+      <entry value="3" name="MAV_STATE_STANDBY">
+        <description>System is grounded and on standby. It can be launched any time.</description>
+      </entry>
+      <entry value="4" name="MAV_STATE_ACTIVE">
+        <description>System is active and might be already airborne. Motors are engaged.</description>
+      </entry>
+      <entry value="5" name="MAV_STATE_CRITICAL">
+        <description>System is in a non-normal flight mode (failsafe). It can however still navigate.</description>
+      </entry>
+      <entry value="6" name="MAV_STATE_EMERGENCY">
+        <description>System is in a non-normal flight mode (failsafe). It lost control over parts or over the whole airframe. It is in mayday and going down.</description>
+      </entry>
+      <entry value="7" name="MAV_STATE_POWEROFF">
+        <description>System just initialized its power-down sequence, will shut down now.</description>
+      </entry>
+      <entry value="8" name="MAV_STATE_FLIGHT_TERMINATION">
+        <description>System is terminating itself (failsafe or commanded).</description>
+      </entry>
+    </enum>
+
+   
+    <enum name="MAV_BOOL" bitmask="true">
+      <description>Enum used to indicate true or false (also: success or failure, enabled or disabled, active or inactive).</description>
+      <entry value="0" name="MAV_BOOL_FALSE">
+        <description>False.</description>
+      </entry>
+      <entry value="1" name="MAV_BOOL_TRUE">
+        <description>True.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_PROTOCOL_CAPABILITY" bitmask="true">
+      <description>Bitmask of (optional) autopilot capabilities (64 bit). If a bit is set, the autopilot supports this capability.</description>
+      <entry value="1" name="MAV_PROTOCOL_CAPABILITY_MISSION_FLOAT">
+        <description>Autopilot supports the MISSION_ITEM float message type.
+          Note that MISSION_ITEM is deprecated, and autopilots should use MISSION_ITEM_INT instead.
+        </description>
+      </entry>
+      <entry value="2" name="MAV_PROTOCOL_CAPABILITY_PARAM_FLOAT">
+        <deprecated since="2022-03" replaced_by="MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_C_CAST"/>
+        <description>Autopilot supports the new param float message type.</description>
+      </entry>
+      <entry value="4" name="MAV_PROTOCOL_CAPABILITY_MISSION_INT">
+        <description>Autopilot supports MISSION_ITEM_INT scaled integer message type.
+          Note that this flag must always be set if missions are supported, because missions must always use MISSION_ITEM_INT (rather than MISSION_ITEM, which is deprecated).
+        </description>
+      </entry>
+      <entry value="8" name="MAV_PROTOCOL_CAPABILITY_COMMAND_INT">
+        <description>Autopilot supports COMMAND_INT scaled integer message type.</description>
+      </entry>
+      <entry value="16" name="MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_BYTEWISE">
+        <description>Parameter protocol uses byte-wise encoding of parameter values into param_value (float) fields: https://mavlink.io/en/services/parameter.html#parameter-encoding.
+          Note that either this flag or MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_C_CAST should be set if the parameter protocol is supported.
+        </description>
+      </entry>
+      <entry value="32" name="MAV_PROTOCOL_CAPABILITY_FTP">
+        <description>Autopilot supports the File Transfer Protocol v1: https://mavlink.io/en/services/ftp.html.</description>
+      </entry>
+      <entry value="64" name="MAV_PROTOCOL_CAPABILITY_SET_ATTITUDE_TARGET">
+        <description>Autopilot supports the SET_ATTITUDE_TARGET message (for commanding attitude from an offboard controller).</description>
+      </entry>
+      <entry value="128" name="MAV_PROTOCOL_CAPABILITY_SET_POSITION_TARGET_LOCAL_NED">
+        <description>Autopilot supports the SET_POSITION_TARGET_LOCAL_NED message (for commanding position and velocity targets in local NED frame).</description>
+      </entry>
+      <entry value="256" name="MAV_PROTOCOL_CAPABILITY_SET_POSITION_TARGET_GLOBAL_INT">
+        <description>Autopilot supports the SET_POSITION_TARGET_GLOBAL_INT message (for commanding position and velocity targets in global scaled integers).</description>
+      </entry>
+      <entry value="512" name="MAV_PROTOCOL_CAPABILITY_TERRAIN">
+        <description>Autopilot supports terrain protocol / data handling.</description>
+      </entry>
+      <entry value="1024" name="MAV_PROTOCOL_CAPABILITY_RESERVED3">
+        <description>Reserved for future use.</description>
+      </entry>
+      <entry value="2048" name="MAV_PROTOCOL_CAPABILITY_FLIGHT_TERMINATION">
+        <description>Autopilot supports the MAV_CMD_DO_FLIGHTTERMINATION command (flight termination).</description>
+      </entry>
+      <entry value="4096" name="MAV_PROTOCOL_CAPABILITY_COMPASS_CALIBRATION">
+        <description>Autopilot supports onboard compass calibration.</description>
+      </entry>
+      <entry value="8192" name="MAV_PROTOCOL_CAPABILITY_MAVLINK2">
+        <description>Autopilot supports MAVLink version 2.</description>
+      </entry>
+      <entry value="16384" name="MAV_PROTOCOL_CAPABILITY_MISSION_FENCE">
+        <description>Autopilot supports mission fence protocol.</description>
+      </entry>
+      <entry value="32768" name="MAV_PROTOCOL_CAPABILITY_MISSION_RALLY">
+        <description>Autopilot supports mission rally point protocol.</description>
+      </entry>
+      <entry value="65536" name="MAV_PROTOCOL_CAPABILITY_RESERVED2">
+        <description>Reserved for future use.</description>
+      </entry>
+      <entry value="131072" name="MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_C_CAST">
+        <description>Parameter protocol uses C-cast of parameter values to set the param_value (float) fields: https://mavlink.io/en/services/parameter.html#parameter-encoding.
+          Note that either this flag or MAV_PROTOCOL_CAPABILITY_PARAM_ENCODE_BYTEWISE should be set if the parameter protocol is supported.
+        </description>
+      </entry>
+      <entry value="262144" name="MAV_PROTOCOL_CAPABILITY_COMPONENT_IMPLEMENTS_GIMBAL_MANAGER">
+        <description>This component implements/is a gimbal manager. This means the GIMBAL_MANAGER_INFORMATION, and other messages can be requested.
+        </description>
+      </entry>
+      <entry value="524288" name="MAV_PROTOCOL_CAPABILITY_COMPONENT_ACCEPTS_GCS_CONTROL">
+        <wip/>
+        <description>Component supports locking control to a particular GCS independent of its system (via MAV_CMD_REQUEST_OPERATOR_CONTROL).</description>
+      </entry>
+      <entry value="1048576" name="MAV_PROTOCOL_CAPABILITY_GRIPPER">
+        <wip/>
+        <description>Autopilot has a connected gripper. MAVLink Grippers would set MAV_TYPE_GRIPPER instead.</description>
+      </entry>
+    </enum>
+    <enum name="FIRMWARE_VERSION_TYPE">
+      <description>These values define the type of firmware release.  These values indicate the first version or release of this type.  For example the first alpha release would be 64, the second would be 65.</description>
+      <entry value="0" name="FIRMWARE_VERSION_TYPE_DEV">
+        <description>development release</description>
+      </entry>
+      <entry value="64" name="FIRMWARE_VERSION_TYPE_ALPHA">
+        <description>alpha release</description>
+      </entry>
+      <entry value="128" name="FIRMWARE_VERSION_TYPE_BETA">
+        <description>beta release</description>
+      </entry>
+      <entry value="192" name="FIRMWARE_VERSION_TYPE_RC">
+        <description>release candidate</description>
+      </entry>
+      <entry value="255" name="FIRMWARE_VERSION_TYPE_OFFICIAL">
+        <description>official stable release</description>
+      </entry>
+    </enum>
+
+    <enum name="MAV_PARAM_TYPE">
+      <description>Specifies the datatype of a MAVLink parameter.</description>
+      <entry value="1" name="MAV_PARAM_TYPE_UINT8">
+        <description>8-bit unsigned integer</description>
+      </entry>
+      <entry value="2" name="MAV_PARAM_TYPE_INT8">
+        <description>8-bit signed integer</description>
+      </entry>
+      <entry value="3" name="MAV_PARAM_TYPE_UINT16">
+        <description>16-bit unsigned integer</description>
+      </entry>
+      <entry value="4" name="MAV_PARAM_TYPE_INT16">
+        <description>16-bit signed integer</description>
+      </entry>
+      <entry value="5" name="MAV_PARAM_TYPE_UINT32">
+        <description>32-bit unsigned integer</description>
+      </entry>
+      <entry value="6" name="MAV_PARAM_TYPE_INT32">
+        <description>32-bit signed integer</description>
+      </entry>
+      <entry value="7" name="MAV_PARAM_TYPE_UINT64">
+        <description>64-bit unsigned integer</description>
+      </entry>
+      <entry value="8" name="MAV_PARAM_TYPE_INT64">
+        <description>64-bit signed integer</description>
+      </entry>
+      <entry value="9" name="MAV_PARAM_TYPE_REAL32">
+        <description>32-bit floating-point</description>
+      </entry>
+      <entry value="10" name="MAV_PARAM_TYPE_REAL64">
+        <description>64-bit floating-point</description>
+      </entry>
+    </enum>
+    <enum name="MAV_PARAM_ERROR">
+      <wip/>
+      <!-- This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. -->
+      <description>Parameter protocol error types (see PARAM_ERROR).</description>
+      <entry value="0" name="MAV_PARAM_ERROR_NO_ERROR">
+        <description>No error occurred (not expected in PARAM_ERROR but may be used in future implementations.</description>
+      </entry>
+      <entry value="1" name="MAV_PARAM_ERROR_DOES_NOT_EXIST">
+        <description>Parameter does not exist</description>
+      </entry>
+      <entry value="2" name="MAV_PARAM_ERROR_VALUE_OUT_OF_RANGE">
+        <description>Parameter value does not fit within accepted range</description>
+      </entry>
+      <entry value="3" name="MAV_PARAM_ERROR_PERMISSION_DENIED">
+        <description>Caller is not permitted to set the value of this parameter</description>
+      </entry>
+      <entry value="4" name="MAV_PARAM_ERROR_COMPONENT_NOT_FOUND">
+        <description>Unknown component specified</description>
+      </entry>
+      <entry value="5" name="MAV_PARAM_ERROR_READ_ONLY">
+        <description>Parameter is read-only</description>
+      </entry>
+      <entry value="6" name="MAV_PARAM_ERROR_TYPE_UNSUPPORTED">
+        <description>Parameter data type (MAV_PARAM_TYPE) is not supported by flight stack (at all)</description>
+      </entry>
+      <entry value="7" name="MAV_PARAM_ERROR_TYPE_MISMATCH">
+        <description>Parameter type does not match expected type</description>
+      </entry>
+      <entry value="8" name="MAV_PARAM_ERROR_READ_FAIL">
+        <description>Parameter exists but reading failed</description>
+      </entry>
+    </enum>
+  </enums>
+
+  <messages>
+  
+    <message id="0" name="HEARTBEAT">
+      <description>The heartbeat message shows that a system or component is present and responding. The type and autopilot fields (along with the message component id), allow the receiving system to treat further messages from this system appropriately (e.g. by laying out the user interface based on the autopilot). This microservice is documented at https://mavlink.io/en/services/heartbeat.html</description>
+      <field type="uint8_t" name="type" enum="MAV_TYPE">Vehicle or component type. For a flight controller component the vehicle type (quadrotor, helicopter, etc.). For other components the component type (e.g. camera, gimbal, etc.). This should be used in preference to component id for identifying the component type.</field>
+      <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class. Use MAV_AUTOPILOT_INVALID for components that are not flight controllers.</field>
+      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG">System mode bitmap.</field>
+      <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
+      <field type="uint8_t" name="system_status" enum="MAV_STATE">System status flag.</field>
+      <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version, not writable by user, gets added by protocol because of magic data type: uint8_t_mavlink_version</field>
+    </message>
+    
+    <message id="111" name="TIMESYNC">
+      <description>
+        Time synchronization message.
+        The message is used for both timesync requests and responses.
+        The request is sent with `ts1=syncing component timestamp` and `tc1=0`, and may be broadcast or targeted to a specific system/component.
+        The response is sent with `ts1=syncing component timestamp` (mirror back unchanged), and `tc1=responding component timestamp`, with the `target_system` and `target_component` set to ids of the original request.
+        Systems can determine if they are receiving a request or response based on the value of `tc`.
+        If the response has `target_system==target_component==0` the remote system has not been updated to use the component IDs and cannot reliably timesync; the requester may report an error.
+        Timestamps are UNIX Epoch time or time since system boot in nanoseconds (the timestamp format can be inferred by checking for the magnitude of the number; generally it doesn't matter as only the offset is used).
+        The message sequence is repeated numerous times with results being filtered/averaged to estimate the offset.
+        See also: https://mavlink.io/en/services/timesync.html.
+      </description>
+      <field type="int64_t" name="tc1" units="ns">Time sync timestamp 1. Syncing: 0. Responding: Timestamp of responding component.</field>
+      <field type="int64_t" name="ts1" units="ns">Time sync timestamp 2. Timestamp of syncing component (mirrored in response).</field>
+      <extensions/>
+      <field type="uint8_t" name="target_system">Target system id. Request: 0 (broadcast) or id of specific system. Response must contain system id of the requesting component.</field>
+      <field type="uint8_t" name="target_component">Target component id. Request: 0 (broadcast) or id of specific component. Response must contain component id of the requesting component.</field>
+    </message>
+
+    <message id="148" name="AUTOPILOT_VERSION">
+      <description>Version and capability of autopilot software. This should be emitted in response to a request with MAV_CMD_REQUEST_MESSAGE.</description>
+      <field type="uint64_t" name="capabilities" enum="MAV_PROTOCOL_CAPABILITY">Bitmap of capabilities</field>
+      <field type="uint32_t" name="flight_sw_version">Firmware version number.
+        The field must be encoded as 4 bytes, where each byte (shown from MSB to LSB) is part of a semantic version: (major) (minor) (patch) (FIRMWARE_VERSION_TYPE).
+      </field>
+      <field type="uint32_t" name="middleware_sw_version">Middleware version number</field>
+      <field type="uint32_t" name="os_sw_version">Operating system version number</field>
+      <field type="uint32_t" name="board_version">HW / board version (last 8 bits should be silicon ID, if any). The first 16 bits of this field specify a board type from an enumeration stored at https://github.com/PX4/PX4-Bootloader/blob/master/board_types.txt and with extensive additions at https://github.com/ArduPilot/ardupilot/blob/master/Tools/AP_Bootloader/board_types.txt</field>
+      <field type="uint8_t[8]" name="flight_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
+      <field type="uint8_t[8]" name="middleware_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
+      <field type="uint8_t[8]" name="os_custom_version">Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.</field>
+      <field type="uint16_t" name="vendor_id">ID of the board vendor</field>
+      <field type="uint16_t" name="product_id">ID of the product</field>
+      <field type="uint64_t" name="uid">UID if provided by hardware (see uid2)</field>
+      <extensions/>
+      <field type="uint8_t[18]" name="uid2">UID if provided by hardware (supersedes the uid field. If this is non-zero, use this field, otherwise use uid)</field>
+    </message>
+
+    <!-- IDs 15-17 reserved for PARAM_VALUE_UNION and other param messages -->
+    <message id="20" name="PARAM_REQUEST_READ">
+      <description>Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as key[const char*] -&gt; value[float]. This allows to send a parameter to any other component (such as the GCS) without the need of previous knowledge of possible parameter names. Thus the same GCS can store different parameters for different autopilots. See also https://mavlink.io/en/services/parameter.html for a full documentation of QGroundControl and IMU code.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="int16_t" name="param_index" invalid="-1">Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored)</field>
+    </message>
+    <message id="21" name="PARAM_REQUEST_LIST">
+      <description>Request all parameters of this component. After this request, all parameters are emitted. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+    </message>
+    <message id="22" name="PARAM_VALUE">
+      <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="float" name="param_value">Onboard parameter value</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
+      <field type="uint16_t" name="param_count">Total number of onboard parameters</field>
+      <field type="uint16_t" name="param_index">Index of this onboard parameter</field>
+    </message>
+    <message id="23" name="PARAM_SET">
+      <description>Set a parameter value (write new value to permanent storage).
+        The receiving component should acknowledge the new parameter value by broadcasting a PARAM_VALUE message (broadcasting ensures that multiple GCS all have an up-to-date list of all parameters). If the sending GCS did not receive a PARAM_VALUE within its timeout time, it should re-send the PARAM_SET message. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html.
+      </description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="float" name="param_value">Onboard parameter value</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
+    </message>    
+  </messages>
+</mavlink>
