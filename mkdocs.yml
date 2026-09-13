@@ -3,18 +3,28 @@ site_description: MAVLink dialect documentation
 site_url: https://teammeltingpoppo.github.io/mavlink-dialect/
 
 theme:
-  name: readthedocs
+  name: material
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 
 nav:
   - Home: index.md
   - Architecture: architecture.md
-  - Dialects:
-      - common: dialects/command.md
-      - debug: dialects/debug.md
-      - diagnostics: dialects/diagnostics.md
-      - model: dialects/model.md
-      - sensor: dialects/sensor.md
-      - system: dialects/system.md
-      - transport: dialects/transport.md
-  - Messages: messages/
-  - Enumerated Types: enums/
+  - Concept: concept.md
+  - Development: development.md
+  - Message Definitions:
+    - dialects:
+        - command.xml: dialects/command.md
+        - debug.xml: dialects/debug.md
+        - diagnostics.xml: dialects/diagnostics.md
+        - model.xml: dialects/model.md
+        - sensor.xml: dialects/sensor.md
+        - system.xml: dialects/system.md
+        - transport.xml: dialects/transport.md
+    - messages: messages/index.md
+    - enums: enums/index.md

@@ -120,9 +120,9 @@ def tidyDescription(desc_string, type:str):
         new_string = "<br/>".join(line.strip() for line in lines)
         return new_string.strip()
 
-def render_message(message: MavMessage) -> str:
+def render_message(message: MavMessage,top_level:int=1) -> str:
     lines = [
-        f"## {message.name} ({message.id}) - [from [{message.source.name}](../dialects/{message.source.stem}.md)]",
+        f"{'#'*top_level} {message.name} ({message.id}) - [from [{message.source.name}](../dialects/{message.source.stem}.md)]",
         "",
     ]
 
@@ -149,9 +149,9 @@ def render_message(message: MavMessage) -> str:
     return "\n".join(lines)
 
 
-def render_enum(enum: MavEnum) -> str:
+def render_enum(enum: MavEnum,top_level:int=1) -> str:
     lines = [
-        f"## {enum.name} - [from [{enum.source.name}](../dialects/{enum.source.stem}.md)]",
+        f"{'#' * top_level} {enum.name} - [from [{enum.source.name}](../dialects/{enum.source.stem}.md)]",
         "",
     ]
 
@@ -222,12 +222,23 @@ def generate(
                 encoding="utf-8"
             )
 
+    (messages_dir / "index.md").write_text(
+        "# Messages\n\n"+
+        "\n\n".join([render_message(message,2) for message in messages]),
+        encoding="utf-8"
+    )
 
     for message in messages:
         (messages_dir / f"{message.name}.md").write_text(
             render_message(message),
             encoding="utf-8",
         )
+
+    (enums_dir / "index.md").write_text(
+        "# Enumerated Types\n\n"+
+        "\n\n".join([render_enum(enum,2) for enum in enums]),
+        encoding="utf-8"
+    )
 
     for enum in enums:
         (enums_dir / f"{enum.name}.md").write_text(

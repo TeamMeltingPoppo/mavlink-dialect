@@ -18,16 +18,13 @@ Message definitionの変更では、単にXMLの構文が正しいことだけ�
 
 本repositoryでは、MAVLink dialectの定義と、それに関連するschema、documentation、CI configurationなどを管理する。
 
-代表的なrepository structureを以下に示す。
+ディレクトリ構成を以下に示す。
 
 ```text
 mavlink-dialect/
 ├── dialect/
 │   └── *.xml
 ├── docs/
-│   ├── architecture.md
-│   └── development.md
-├── tests/
 ├── tools/
 ├── .github/
 │   └── workflows/
@@ -42,23 +39,29 @@ CI configurationは`.github/workflows/`で管理する。
 
 実際のdirectory structureは、repositoryの規模および運用方法に応じて変更してよい。ただし、message definition、documentation、testおよびdevelopment infrastructureの責務が明確に分離されることを基本とする。
 
-## Message Development
+## Message Architecture
 
-新しいMAVLink messageを追加する場合、既存のmessageで要求を満たせないことを確認した上で追加する。
+本システムでは、Node間で交換する情報をMAVLink messageとして定義します。MAVLink messageは、単一の情報を表現するためにできるだけ小さな単位に分割して設計します。MAVLink messageの具体的な構造は`mavlink-dialect`で定義します。本章では、messageを設計および運用する際の共通規則を定めます。
 
-Messageを追加または変更する際には、少なくとも以下を明確にする。
+### Messageの決め方の原則
 
-- messageの目的
-- PublisherおよびSubscriber
-- 各fieldの意味
-- fieldの型
-- 単位
-- 有効な値の範囲
-- 必要に応じてtimestamp、validityおよびstatus
+MAVLink messageは、以下の原則に従って設計します。
 
-既存messageの意味を変更する変更は、既存のPublisherおよびSubscriberの動作に影響するため、原則として新しいmessageの追加によって対応する。
+1. 1つのmessageは明確に定義された一つの目的を持つものとする。異なる目的の情報を一つのmessageにまとめることで、messageの意味や利用条件が曖昧にならないようにする。
+1. fieldの意味および単位を明確に定義する。物理量を表すfieldについては、原則としてSI単位系を使用する。単位だけでなく、必要に応じてスケール、符号、基準座標系および有効範囲を定義する。
+1. messageの受信側がmessage単体から必要な情報を解釈できるようにする。外部文書や特定のfirmware実装を前提としなければ意味を解釈できないmessage設計は避ける。
+1. messageの変更による互換性への影響を考慮する。既存messageのfieldを変更または削除する場合は、既存のPublisherおよびSubscriberへの影響を評価する。互換性に関する具体的な規則は、Compatibility and Versioningで定義する。
 
-Messageの命名、fieldの命名、型、単位およびその他のmessage design rulesは、`Message Architecture`および関連するmessage specificationに従う。
+### Messageの有効性
+
+MAVLink messageの各fieldには、値が有効である条件を必要に応じて定義します。
+
+MeasurementやStateなどのmessageでは、センサやNodeの状態によって値を取得できない場合がある。この場合、Subscriberが値の有効性を判定できるように、messageまたはfieldについて有効性を表現する方法を定義する。
+
+Messageの有効性と通信の成否は別の概念として扱う。MAVLink messageを正常に受信できた場合でも、そのmessageに含まれる計測値が有効であるとは限りません。
+
+例えば、GNSS Nodeから測位情報を正常に受信した場合でも、GNSSが測位状態を確立していなければ、測位結果を有効な情報として利用できない場合があります。このような状態は、通信の成否とは別にmessageまたはfieldの状態として表現します。
+
 
 ## Code Generation
 
@@ -81,20 +84,6 @@ MAVLink dialectの変更は、以下の観点から検証する。
 さらに、生成されたlibraryがC++ compilerによって正常にcompileできることを確認する。
 
 必要に応じて、messageのserializationおよびdeserializationが一致することをtestする。
-
-Validationでは、少なくとも以下を自動的に検証する。
-
-```text
-Dialect
-  │
-  ├── XML / dialect validation
-  │
-  ├── mavgen
-  │
-  ├── Generated code compilation
-  │
-  └── Serialization / deserialization tests
-```
 
 これらの検証は、開発者のローカル環境だけでなくCIでも実行する。
 
